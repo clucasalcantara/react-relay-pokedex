@@ -1,26 +1,54 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react';
+import { graphql, QueryRenderer } from 'react-relay'
+import environment from './environment'
+import Pokedex from './components/pages'
+import { observer } from 'mobx-react'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+@observer
+class App extends Component {
+  onSubmit = (e) => {
+    if (e.keyCode === 13) {
+      this.props.store.changePokemon(e.target.textContent.toLowerCase())
+    }
+  }
+  render() {
+    return (
+      <QueryRenderer
+        environment={environment}
+        query={graphql`
+          query AppPokemonQuery($name: String) {
+            pokemon(name: $name) {
+              ...viewer_pokemon
+              ...stats_pokemon
+            }
+          }
+        `}
+        variables={{ name: this.props.store.pokemon }}
+        render={({ error, props }) => {
+          console.log(error, props)
+          if (error) {
+            return (
+              <div>
+                <Pokedex onKeyDown={this.onSubmit} error={true} />
+              </div>
+            )
+          }
+          if (!props) {
+            return (
+              <div>
+                <Pokedex onKeyDown={this.onSubmit} loading={true} />
+              </div>
+            )
+          }
+          return (
+            <div>
+              <Pokedex onKeyDown={this.onSubmit} pokemon={props.pokemon} />
+            </div>
+          )
+        }}
+      />
+    )
+  }
 }
 
 export default App;

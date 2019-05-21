@@ -1,0 +1,17 @@
+type Pokemon {
+  id: ID
+  name: String
+  height: Float
+  weight: Float
+  types: [String]
+  image: String
+  order: Int
+  description: String
+  genus: String
+}
+
+# Query any Pokémon by number or name
+type Query {
+  query: Query
+  pokemon(name: String): Pokemon
+}
