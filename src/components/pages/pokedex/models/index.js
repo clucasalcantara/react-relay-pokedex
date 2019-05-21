@@ -1,7 +1,13 @@
-import { observable, action } from 'mobx'
+import { observable, action, decorate } from 'mobx';
+class PokedexModel {
+  pokemon = 'pikachu';
 
-export default class PokedexModel {
-  @observable pokemon = 'pikachu'
-
-  @action changePokemon = pokemon => this.pokemon = pokemon
+  changePokemon = pokemon => (this.pokemon = pokemon);
 }
+
+decorate(PokedexModel, {
+  pokemon: observable,
+  changePokemon: action
+});
+
+export default PokedexModel;
